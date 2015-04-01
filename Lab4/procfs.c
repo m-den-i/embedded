@@ -50,6 +50,7 @@ void mul(int a, int b){
 void div(int a, int b){
 	if (b != 0)	
 	res = a / b;
+else res = -1
 }
 
 //Input/output for operators
@@ -93,7 +94,7 @@ int op_write(struct file *sp_file,const char __user *buf, size_t size, loff_t *o
 }
 
 //Operations for procs
-struct file_operations ops = {
+struct file_operations resops = {
 	.open = simple_proc_open,
 	.read = res_read,
 	.write = simple_proc_write,
@@ -132,7 +133,7 @@ int create_proc(char * name, struct file_operations * ops){
 
 static int __init init_simpleproc (void){
 	printk(KERN_INFO "init simple proc\n");
-	if (create_proc("a", &digops) && create_proc("b", &digops) && create_proc("res", &resops) && create_proc("op", &opops)){
+	if (create_proc("a", &aops) && create_proc("b", &bops) && create_proc("res", &resops) && create_proc("op", &opops)){
 		return 0;
 	}
 	else {

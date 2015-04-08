@@ -50,11 +50,12 @@ void mul(int a, int b){
 void div(int a, int b){
 	if (b != 0)	
 	res = a / b;
-else res = -1
+else res = -1;
 }
 
 //Input/output for operators
-int res_read(struct file *sp_file,char __user *buf, size_t size, loff_t *offset){
+int res_open(struct file *sp_file,char __user *buf, size_t size, loff_t *offset){
+	int i = 0;	
 	if (len_check)
 	 len_check = 0;
 	else {
@@ -63,7 +64,9 @@ int res_read(struct file *sp_file,char __user *buf, size_t size, loff_t *offset)
 	}
 	printk(KERN_INFO "proc called read %d\n",size);
 	sprintf(msg, "%d", res);
-	copy_to_user(buf,msg,len);
+	while (msg[i]!='\0') i++;
+	printk(KERN_INFO "res = %d, msg=%s\n", res, msg);
+	copy_to_user(buf,msg, i+1);
 	return len;
 }
 int a_write(struct file *sp_file,const char __user *buf, size_t size, loff_t *offset){
@@ -95,31 +98,24 @@ int op_write(struct file *sp_file,const char __user *buf, size_t size, loff_t *o
 
 //Operations for procs
 struct file_operations resops = {
-	.open = simple_proc_open,
-	.read = res_read,
-	.write = simple_proc_write,
-	.release = simple_proc_release
+	.owner = THIS_MODULE,
+	//.open = res_open,
+	.read = res_open
 };
 
 struct file_operations aops = {
-	.open = simple_proc_open,
-	.read = simple_proc_read,
-	.write = a_write,
-	.release = simple_proc_release
+	.owner = THIS_MODULE,
+	.write = a_write
 };
 
 struct file_operations bops = {
-	.open = simple_proc_open,
-	.read = simple_proc_read,
-	.write = b_write,
-	.release = simple_proc_release
+	.owner = THIS_MODULE,
+	.write = b_write
 };
 
 struct file_operations opops = {
-	.open = simple_proc_open,
-	.read = simple_proc_read,
-	.write = op_write,
-	.release = simple_proc_release
+	.owner = THIS_MODULE,
+	.write = op_write
 };
 
 //Creating proc
